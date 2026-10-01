@@ -615,33 +615,53 @@
             const canPrompt = !!deferred;
             if (hidden) return null;
 
+            // رابط التطبيق على Google Play — لو التطبيق منشور هناك
+            const PLAY_STORE_URL = '';
+
+            const openPlayStore = () => {
+                // نحوّل رابط الويب لـ Play Store
+                const id = PLAY_STORE_URL.split('id=')[1] ? PLAY_STORE_URL.split('id=')[1].split('&')[0] : '';
+                if (id) {
+                    const intent = 'intent://#Intent;scheme=play;package=' + id +
+                        ';S.browser_fallback_url=' + encodeURIComponent(window.location.href) + ';end';
+                    window.location.href = intent;
+                    return true;
+                }
+                return false;
+            };
+
             const handleClick = async () => {
-                // 1) المتصفحات اللي بتدعم التثبيت المباشر (Chrome / Edge / Samsung / Android)
-                if (deferred) {
+                // 1) لو التطبيق منشور على Google Play → روحله على طول
+                if (PLAY_STORE_URL && openPlayStore()) return;
+
+                // 2) نافذة تثبيت جوجل الأصلية (Chrome / Edge / Samsung / Android)
+                const dp = deferred || window.__pwaPrompt;
+                if (dp) {
                     try {
-                        deferred.prompt();
-                        const choice = await deferred.userChoice;
-                        if (choice && choice.outcome === 'accepted') setHidden(true);
+                        window.__pwaPrompt = null;
                         setDeferred(null);
-                    } catch (e) { setShowGuide(true); }
-                    return;
+                        dp.prompt();
+                        const choice = await dp.userChoice;
+                        if (choice && choice.outcome === 'accepted') setHidden(true);
+                        return;
+                    } catch (e) { /* فشلت، نكمّل للخط اللي بعده */ }
                 }
 
-                // 2) آيفون: نفتح قائمة المشاركة الأصلية (فيها "إضافة إلى الشاشة الرئيسية")
+                // 3) آيفون: نفتح قائمة المشاركة الأصلية (فيها "إضافة إلى الشاشة الرئيسية")
                 if (navigator.share) {
                     try {
                         await navigator.share({
                             title: document.title,
-                            text: 'ثبّت التطبيق على موبايلك',
+                            text: '📲 دوس "إضافة إلى الشاشة الرئيسية" لتثبيت التطبيق',
                             url: window.location.href
                         });
                         return;
                     } catch (e) {
-                        if (e && e.name === 'AbortError') return; // المستخدم قفل من غير ما يختار
+                        if (e && e.name === 'AbortError') return;
                     }
                 }
 
-                // 3) أي متصفح تاني مافيهوش ولا واحدة من دول
+                // 4) أي متصفح تاني → دليل الخطوة الواحدة
                 setShowGuide(true);
             };
 

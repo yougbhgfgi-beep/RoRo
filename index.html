@@ -43,6 +43,17 @@
                 navigator.serviceWorker.register('./sw.js').catch(function () { });
             });
         }
+
+        // نحفظ حدث التثبيت فوراً (قبل ما React يشتغل) عشان مايضيعش أبداً
+        window.__pwaPrompt = null;
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            window.__pwaPrompt = e;
+        });
+        window.addEventListener('appinstalled', function () {
+            window.__pwaPrompt = null;
+            window.__pwaInstalled = true;
+        });
     </script>
 
     <script>
@@ -524,12 +535,14 @@
                 const standalone =
                     window.matchMedia('(display-mode: standalone)').matches ||
                     window.navigator.standalone === true;
-                if (standalone) setHidden(true);
+                if (standalone || window.__pwaInstalled) setHidden(true);
+                else if (window.__pwaPrompt) setDeferred(window.__pwaPrompt);
             }, []);
 
             useEffect(() => {
                 const onPrompt = (e) => {
                     e.preventDefault();
+                    window.__pwaPrompt = e;
                     setDeferred(e);
                 };
                 const onInstalled = () => { setHidden(true); setDeferred(null); };
@@ -541,20 +554,39 @@
                 };
             }, []);
 
-            // iOS Safari مابيقبلش beforeinstallprompt → بنعرض له الشرح يدوي
+            // iOS Safari مابيقبلش beforeinstallprompt → بنفتحله قائمة المشاركة مباشرة
             const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
             const canPrompt = !!deferred;
             if (hidden) return null;
 
             const handleClick = async () => {
+                // 1) المتصفحات اللي بتدعم التثبيت المباشر (Chrome / Edge / Samsung / Android)
                 if (deferred) {
-                    deferred.prompt();
-                    const choice = await deferred.userChoice;
-                    if (choice && choice.outcome === 'accepted') setHidden(true);
-                    setDeferred(null);
-                } else {
-                    setShowGuide(true);
+                    try {
+                        deferred.prompt();
+                        const choice = await deferred.userChoice;
+                        if (choice && choice.outcome === 'accepted') setHidden(true);
+                        setDeferred(null);
+                    } catch (e) { setShowGuide(true); }
+                    return;
                 }
+
+                // 2) آيفون: نفتح قائمة المشاركة الأصلية (فيها "إضافة إلى الشاشة الرئيسية")
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: document.title,
+                            text: 'ثبّت التطبيق على موبايلك',
+                            url: window.location.href
+                        });
+                        return;
+                    } catch (e) {
+                        if (e && e.name === 'AbortError') return; // المستخدم قفل من غير ما يختار
+                    }
+                }
+
+                // 3) أي متصفح تاني مافيهوش ولا واحدة من دول
+                setShowGuide(true);
             };
 
             return (

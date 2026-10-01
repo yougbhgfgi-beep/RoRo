@@ -9,7 +9,7 @@
     "scope": "./",
     "display": "standalone",
     "display_override": ["standalone", "fullscreen", "minimal-ui"],
-    "orientation": "portrait",
+    "orientation": "any",
     "background_color": "#020617",
     "theme_color": "#020617",
     "categories": ["lifestyle", "personalization", "entertainment"],

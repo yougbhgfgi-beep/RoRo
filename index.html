@@ -861,28 +861,71 @@
                         </div>
                     )}
                     
-                    {/* Music Toggler & Playlist Controller */}
+                    {/* ===== الموسيقى — كبسولة زجاجية صغيرة وفخمة ===== */}
                     {isLogged && (
-                        <div className="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center bg-slate-900/90 backdrop-blur-xl py-2 px-4 rounded-full border border-slate-700/60 shadow-[0_10px_30px_rgba(0,0,0,0.5)] gap-3 animate-fade-in" dir="rtl">
-                            <button onClick={toggleAudio} className={`p-3 rounded-full shadow-lg border transition-all ${isPlaying ? 'bg-rose-600 border-rose-500 text-white animate-pulse shadow-[0_0_15px_rgba(225,29,72,0.5)]' : 'bg-slate-800 border-slate-700 text-rose-400 hover:scale-110'}`}>
-                                <Music size={24} className={isPlaying ? 'animate-spin-slow' : ''} />
+                        <div
+                            className="fixed top-3 left-3 md:top-5 md:left-5 z-50 flex items-center gap-2 rounded-full py-1.5 px-1.5 pr-3 md:py-2 md:px-2 md:pr-4
+                                       bg-gradient-to-l from-rose-950/80 via-slate-900/85 to-indigo-950/80
+                                       backdrop-blur-xl border border-rose-400/20
+                                       shadow-[0_6px_24px_rgba(0,0,0,0.55),0_0_18px_rgba(244,63,94,0.12)_inset]
+                                       animate-fade-in"
+                            dir="rtl"
+                        >
+                            {/* زر التشغيل */}
+                            <button
+                                onClick={toggleAudio}
+                                aria-label={isPlaying ? "إيقاف مؤقت" : "تشغيل"}
+                                title={isPlaying ? "إيقاف مؤقت" : "تشغيل"}
+                                className={`relative w-9 h-9 md:w-10 md:h-10 shrink-0 rounded-full grid place-items-center cursor-pointer
+                                            transition-all duration-300 active:scale-90
+                                            ${isPlaying
+                                                ? 'bg-gradient-to-br from-rose-500 via-rose-600 to-pink-700 text-white shadow-[0_0_16px_rgba(244,63,94,0.55)]'
+                                                : 'bg-gradient-to-br from-slate-800 to-slate-900 text-rose-300 border border-rose-400/30 hover:border-rose-300/60 hover:text-rose-200'}`}
+                            >
+                                {isPlaying && (
+                                    <span className="absolute inset-0 rounded-full bg-rose-500/40 animate-ping pointer-events-none"></span>
+                                )}
+                                <Music size={16} strokeWidth={2.5} className={`relative ${isPlaying ? 'animate-spin-slow' : ''}`} />
                             </button>
-                            
-                            <div className="flex gap-2 border-r border-slate-700 pr-3 mr-1 items-center">
-                                <span className="text-rose-400 text-xs font-bold mr-2 hidden md:inline">{songNames[currentSongIndex]}</span>
-                                {playlist.map((src, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => playSong(i)}
-                                        title={songNames[i]}
-                                        className={`w-2.5 h-2.5 rounded-full transition-all ${currentSongIndex === i ? 'bg-rose-500 scale-125 shadow-[0_0_10px_rgba(244,63,94,0.8)]' : 'bg-slate-600 hover:bg-slate-400'}`}
-                                    />
-                                ))}
-                                <button onClick={() => playSong((currentSongIndex + 1) % playlist.length)} className="text-slate-300 hover:text-white p-2 hover:bg-slate-800 rounded-full transition-colors text-xl" title="الأغنية التالية">
-                                    ⏭️
+
+                            {/* الاسم + النقط */}
+                            <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-[10px] md:text-[11px] font-bold text-rose-200/90 truncate max-w-[70px] md:max-w-[100px]">
+                                    {songNames[currentSongIndex]}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                    {playlist.map((src, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => playSong(i)}
+                                            title={songNames[i]}
+                                            aria-label={songNames[i]}
+                                            className={`w-1.5 h-1.5 rounded-full cursor-pointer transition-all duration-300
+                                                       ${currentSongIndex === i
+                                                            ? 'bg-rose-400 scale-150 shadow-[0_0_8px_rgba(244,63,94,0.9)]'
+                                                            : 'bg-rose-200/25 hover:bg-rose-200/60'}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* فاصل + التprevious/التالي */}
+                            <div className="flex items-center gap-0.5 pr-1 md:pr-2 mr-0.5 border-r border-rose-400/15">
+                                <button
+                                    onClick={() => playSong((currentSongIndex + 1) % playlist.length)}
+                                    title="الأغنية التالية"
+                                    aria-label="الأغنية التالية"
+                                    className="w-6 h-6 md:w-7 md:h-7 rounded-full grid place-items-center cursor-pointer text-rose-200/60 hover:text-white hover:bg-rose-500/20 active:scale-90 transition-all duration-200"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
                                 </button>
-                                <button onClick={() => playSong((currentSongIndex - 1 + playlist.length) % playlist.length)} className="text-slate-300 hover:text-white p-2 hover:bg-slate-800 rounded-full transition-colors text-xl" title="الأغنية السابقة">
-                                    ⏮️
+                                <button
+                                    onClick={() => playSong((currentSongIndex - 1 + playlist.length) % playlist.length)}
+                                    title="الأغنية السابقة"
+                                    aria-label="الأغنية السابقة"
+                                    className="w-6 h-6 md:w-7 md:h-7 rounded-full grid place-items-center cursor-pointer text-rose-200/60 hover:text-white hover:bg-rose-500/20 active:scale-90 transition-all duration-200"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6l-8.5 6L18 18V6zM8 6H6v12h2V6z" /></svg>
                                 </button>
                             </div>
                         </div>

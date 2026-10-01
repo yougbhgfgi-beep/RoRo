@@ -610,8 +610,12 @@
             ];
             const songNames = ["💌 اغنية الرسالة", "🎵 الاغنية التانية"];
             const MESSAGE_SONG = 0;
-            const [currentSongIndex, setCurrentSongIndex] = useState(1);
+            const MAIN_SONG = 1;
+            const [currentSongIndex, setCurrentSongIndex] = useState(MAIN_SONG);
             const [songMissing, setSongMissing] = useState(false);
+            // الأغنية بتتكرر طول فترة الرسالة المفتوحة
+            const [letterOpen, setLetterOpen] = useState(false);
+            const songStartedRef = useRef(false);
 
             const playSong = useCallback((index) => {
                 setCurrentSongIndex(index);
@@ -631,6 +635,12 @@
             }, [currentSongIndex]);
 
             const handleSongEnd = () => {
+                // طول ما الرسالة مفتوحة، اعيد نفس الاغنية تاني
+                if (letterOpen && currentSongIndex === MESSAGE_SONG) {
+                    const a = audioRef.current;
+                    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+                    return;
+                }
                 setCurrentSongIndex((prev) => (prev + 1) % playlist.length);
             };
 
@@ -704,11 +714,26 @@
                 return () => clearInterval(interval);
             }, []);
 
+            // أغنية الرسالة بتبدأ مع أول حرف في كلمة السر
+            const handlePasswordChange = (e) => {
+                const val = e.target.value;
+                setPassword(val);
+                if (!songStartedRef.current && val.length > 0) {
+                    songStartedRef.current = true;
+                    setLetterOpen(true);
+                    playSong(MESSAGE_SONG);
+                }
+            };
+
             const handleLogin = () => {
                 if (password.trim().toUpperCase() === "RORO") {
                     setIsLogged(true);
-                    // اغنية الرسالة تشتغل من اول ما يدخل كلمة السر
-                    playSong(MESSAGE_SONG);
+                    // لو طلع فاضي، اشغلها هنا برضه
+                    if (!songStartedRef.current) {
+                        songStartedRef.current = true;
+                        setLetterOpen(true);
+                        playSong(MESSAGE_SONG);
+                    }
                     setTimeout(() => {
                         setShowLetter(true);
                     }, 500);
@@ -788,7 +813,7 @@
                                     type="password"
                                     placeholder="كلمة السر الخاصة بنا"
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={handlePasswordChange}
                                     className="fancy-input w-full p-6 pl-14 rounded-3xl text-white placeholder-slate-400 text-center text-xl outline-none shadow-inner"
                                 />
                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 opacity-40">
@@ -941,9 +966,9 @@
                     {/* Envelope Letter Modal — بتشغل اغنية الرسالة */}
                     {showLetter && (
                         <EnvelopeMessage
-                            onClose={() => setShowLetter(false)}
-                            onPlayMessageSong={() => playSong(MESSAGE_SONG)}
-                            onResumeMainSong={() => playSong(1)}
+                            onClose={() => { setShowLetter(false); setLetterOpen(false); playSong(MAIN_SONG); }}
+                            onPlayMessageSong={() => { setLetterOpen(true); playSong(MESSAGE_SONG); }}
+                            onResumeMainSong={() => { setLetterOpen(false); playSong(MAIN_SONG); }}
                         />
                     )}
                     <MiniMessages />

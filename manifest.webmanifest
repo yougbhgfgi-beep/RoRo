@@ -1,0 +1,73 @@
+{
+    "id": "./",
+    "name": "محمد ❤️ مروه",
+    "short_name": "مروه",
+    "description": "قصتنا مع بعض.. حب محفور في القلب للأبد",
+    "lang": "ar",
+    "dir": "rtl",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "display_override": ["standalone", "fullscreen", "minimal-ui"],
+    "orientation": "portrait",
+    "background_color": "#020617",
+    "theme_color": "#020617",
+    "categories": ["lifestyle", "personalization", "entertainment"],
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "./icon-64.png",
+            "sizes": "64x64",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-256.png",
+            "sizes": "256x256",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "رسالة من قلبي 💌",
+            "short_name": "الرسالة",
+            "url": "./index.html#letter"
+        },
+        {
+            "name": "صورنا 💗",
+            "short_name": "الصور",
+            "url": "./index.html#gallery"
+        }
+    ]
+}

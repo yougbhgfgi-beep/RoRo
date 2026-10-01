@@ -924,20 +924,32 @@
                         <div className="max-w-5xl mx-auto px-6 relative">
                             <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-slate-800 hidden md:block rounded-full"></div>
                             {[
-                                { t: "أجمل حاجه حصلتلي ♥️", d: "20/2/2026 — يوم ما عرفتك.. أجمل صدفة في عمري و20/2/2026 دخلتي حياتي بالفرح والسعادة.", img: "./100000100.jpeg" },
-                                { t: "يوم ما قوتلك بحبك 💗", d: "24/2/2026 — يوم ما قلتله بحبك لأول مرة.. ومن ساعتها وأنا مش قادر أبعد.", img: "./1010.jpeg" },
-                                { t: "يوم ما قلتلك بحبك", d: "1/3/2026 — يوم ما قلتي بحبك.. وقلبي اتولد من جديد من يومها 💗", img: "./1001.jpeg" },
-                                { t: "أول عيد لينا سوا 💕", d: "19/3/2026 — أول عيد لي احنا اتنين.. وأول عيد يثبت إنك عيدي.", img: "./1000001.jpeg" },
-                                { t: "أول هديه مني ليكي ♥️", d: "10/4/2026 — أول هدية ليكي.. ونور عيني، ردى الجميل ليكي ♥️", img: "./100000100.jpeg" },
-                                { t: "أول عيد ميلاد ليكي 🎂", d: "9/4/2026 — أول عيد ميلاد ليكي وانا معكي.. أحلى يوم في السنة كلها.", img: "./1010.jpeg" },
-                                { t: "تاني عيد لينا سوا ♥️", d: "27/5/2026 — تاني عيد لينا سوا.. وكل عيد وانتي عيدي ويا رب كل عيد يجمعنا ♥️", img: "./1001.jpeg" },
-                                { t: "أول هديه منك ليا ♥️", d: "28/8/2026 — أول هديه واحلى واغلى هديه منك ليا.. ربنا يديمك ليا يا نور عيني ♥️", img: "./1000001.jpeg" }
+                                { t: "أجمل حاجه حصلتلي ♥️", c: "أنتِ صدفة جميلة جت في وقتها… وغيّرت حياتي كلها", d: "20/2/2026 — يوم ما عرفتك.. أجمل صدفة في عمري و20/2/2026 دخلتي حياتي بالفرح والسعادة.", img: "./100000100.jpeg" },
+                                { t: "يوم ما قوتلك بحبك 💗", c: "لساني اتعلّم كلمة أحلى من كل الكلام… وبيك", d: "24/2/2026 — يوم ما قلتله بحبك لأول مرة.. ومن ساعتها وأنا مش قادر أبعد.", img: "./1010.jpeg" },
+                                { t: "يوم ما قلتلك بحبك", c: "قلبي اتولد من جديد في يوم 1/3… وده تاريخ تاع قلبي", d: "1/3/2026 — يوم ما قلتي بحبك.. وقلبي اتولد من جديد من يومها 💗", img: "./1001.jpeg" },
+                                { t: "أول عيد لينا سوا 💕", c: "أول عيد يحس إنك عيدي… ومن غيرك الأعياد ناقصة", d: "19/3/2026 — أول عيد لي احنا اتنين.. وأول عيد يثبت إنك عيدي.", img: "./1000001.jpeg" },
+                                { t: "أول هديه مني ليكي ♥️", c: "هدية بسيطة… لكن قلبي فيها كان معاكِ", d: "10/4/2026 — أول هدية ليكي.. ونور عيني، ردى الجميل ليكي ♥️", e: "🎁" },
+                                { t: "أول عيد ميلاد ليكي 🎂", c: "أجمل أحلام اتحقت… إنك تحتفلي وأنا جنبك", d: "9/4/2026 — أول عيد ميلاد ليكي وانا معكي.. أحلى يوم في السنة كلها.", e: "🎂" },
+                                { t: "تاني عيد لينا سوا ♥️", c: "من غيرك الأعياد مالهاش ل)… وانتِ عيدي", d: "27/5/2026 — تاني عيد لينا سوا.. وكل عيد وانتي عيدي ويا رب كل عيد يجمعنا ♥️", e: "💕" },
+                                { t: "أول هديه منك ليا ♥️", c: "أحلى هديه في عمري… وإنتِ مصدر كل فرح", d: "28/8/2026 — أول هديه واحلى واغلى هديه منك ليا.. ربنا يديمك ليا يا نور عيني ♥️", e: "💝" }
                             ].map((item, i) => (
                                 <div key={i} className={`flex mb-24 flex-col md:flex-row ${i % 2 === 0 ? 'md:flex-row-reverse' : ''} items-center group`}>
                                     <div className="md:w-1/2 flex justify-center">
-                                        <div className="w-64 h-80 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-slate-800 timeline-img bg-slate-900 timeline-img-container shadow-[0_0_30px_rgba(0,0,0,0.6)]">
-                                            <img src={item.img} className="w-full h-full object-cover opacity-90" alt="Memory" />
-                                        </div>
+                                        {item.img ? (
+                                            <figure className="w-64 m-0">
+                                                <div className="w-64 h-80 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-rose-500/30 timeline-img bg-slate-900 timeline-img-container shadow-[0_0_30px_rgba(244,63,94,0.25)]">
+                                                    <img src={item.img} className="w-full h-full object-cover opacity-90" alt={item.t} />
+                                                </div>
+                                                <figcaption className="mt-4 px-4 text-center text-sm leading-relaxed font-medium text-rose-200/90 italic">
+                                                    “{item.c}”
+                                                </figcaption>
+                                            </figure>
+                                        ) : (
+                                            <div className="w-64 h-64 rounded-full flex flex-col items-center justify-center text-center px-6 bg-gradient-to-br from-rose-500/20 via-fuchsia-500/15 to-indigo-500/20 border-2 border-rose-400/30 shadow-[0_0_45px_rgba(244,63,94,0.28)] group-hover:scale-105 group-hover:border-rose-300/60 transition-all duration-500">
+                                                <span className="text-6xl mb-3 drop-shadow-lg animate-pulse">{item.e}</span>
+                                                <p className="text-sm leading-7 font-medium text-rose-100/90 italic">“{item.c}”</p>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="z-10 bg-rose-500 w-8 h-8 rounded-full border-4 border-slate-900 shadow-[0_0_15px_rgba(225,29,72,0.5)] my-6 md:my-0 group-hover:scale-125 transition-transform"></div>
                                     <div className="md:w-1/2 md:px-12 text-center md:text-right mt-6 md:mt-0">
@@ -1071,10 +1083,10 @@
                             <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-rose-300 drop-shadow-md">صورنا 💗</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {[
-                                    { src: "./100000100.jpeg", cap: "أجمل حاجه حصلتلي يوم ما عرفتك 20/2/2026 ♥️" },
-                                    { src: "./1000001.jpeg", cap: "10/4/2026 أول هديه مني ليكي ♥️" },
-                                    { src: "./1001.jpeg", cap: "19/3/2026 أول عيد لينا سوا 💕" },
-                                    { src: "./1010.jpeg", cap: "9/4/2026 أول عيد ميلاد ليكي وانا معكي 🎂" }
+                                    { src: "./100000100.jpeg", d: "20/2/2026", cap: "أنتِ صدفة جت في وقتها… وقلبيعرف من هنا ❤️" },
+                                    { src: "./1000001.jpeg", d: "19/3/2026", cap: "أول عيد يحس إنك عيدي… ومن غيرك الأعياد ناقصة 💕" },
+                                    { src: "./1001.jpeg", d: "1/3/2026", cap: "يوم 1/3… اللي قلبي اتولد من جديد فيهم 💗" },
+                                    { src: "./1010.jpeg", d: "9/4/2026", cap: "أول عيد ميلاد ليكي وأنا جنبك… أحلى سنة في عمري 🎂" }
                                 ].map((img, i) => (
                                     <div
                                         key={i}
@@ -1088,8 +1100,14 @@
                                                 loading="lazy"
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                             />
+                                            <div className="absolute inset-x-0 top-0 p-3 bg-gradient-to-b from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                <span className="text-xs font-bold text-rose-200">{img.d}</span>
+                                            </div>
                                         </div>
-                                        <div className="py-3 px-1 text-center text-sm text-rose-300 font-medium">{img.cap}</div>
+                                        <div className="pt-4 pb-3 px-2 text-center">
+                                            <div className="text-rose-400/70 text-xs font-bold mb-1">{img.d}</div>
+                                            <p className="text-rose-200 text-sm leading-relaxed font-medium italic">“{img.cap}”</p>
+                                        </div>
                                     </div>
                                 ))}
                             </div>

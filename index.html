@@ -554,6 +554,62 @@
                 };
             }, []);
 
+            // ===== التثبيت التلقائي: من أول لمسة على الشاشة =====
+            useEffect(() => {
+                let done = false;
+
+                const isStandalone =
+                    window.matchMedia('(display-mode: standalone)').matches ||
+                    window.navigator.standalone === true;
+                if (isStandalone || window.__pwaInstalled) return;
+
+                const autoInstall = async () => {
+                    if (done) return;
+                    done = true;
+                    cleanup();
+
+                    const dp = window.__pwaPrompt;
+                    if (dp) {
+                        try {
+                            dp.prompt();
+                            const choice = await dp.userChoice;
+                            if (choice && choice.outcome === 'accepted') setHidden(true);
+                            window.__pwaPrompt = null;
+                            setDeferred(null);
+                            return;
+                        } catch (e) { /* فشلت، نكمّل */ }
+                    }
+
+                    // آيفون: نفتح قائمة المشاركة الأصلية على طول
+                    if (navigator.share) {
+                        try {
+                            await navigator.share({
+                                title: document.title,
+                                text: '📲 دوس "إضافة إلى الشاشة الرئيسية" لتثبيت التطبيق',
+                                url: window.location.href
+                            });
+                            setHidden(true);
+                            return;
+                        } catch (e) {
+                            if (e && e.name === 'AbortError') return;
+                        }
+                    }
+                    // لو مفيش حاجة نقدر نعملها، سيب الزر اليدوي ظاهر
+                    done = false;
+                };
+
+                function cleanup() {
+                    window.removeEventListener('pointerdown', autoInstall);
+                    window.removeEventListener('touchstart', autoInstall);
+                    window.removeEventListener('keydown', autoInstall);
+                }
+
+                window.addEventListener('pointerdown', autoInstall, { once: false });
+                window.addEventListener('touchstart', autoInstall, { passive: true });
+                window.addEventListener('keydown', autoInstall);
+                return cleanup;
+            }, []);
+
             // iOS Safari مابيقبلش beforeinstallprompt → بنفتحله قائمة المشاركة مباشرة
             const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
             const canPrompt = !!deferred;

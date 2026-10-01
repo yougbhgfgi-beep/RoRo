@@ -250,6 +250,118 @@
             50% { filter: blur(25px); }
             100% { filter: blur(10px); }
         }
+
+        /* ========== ظرف الرسالة الفاخر ========== */
+        .envelope-stage {
+            perspective: 1600px;
+            perspective-origin: 50% 40%;
+        }
+
+        .envelope-wrap {
+            transform-style: preserve-3d;
+            transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: rotateX(6deg);
+        }
+
+        .envelope-wrap.opened {
+            transform: rotateX(0deg) translateY(-14px) scale(1.02);
+        }
+
+        /* جسم الظرف — جلد مخملي */
+        .envelope-body {
+            background:
+                linear-gradient(160deg, #f9a8c0 0%, #f472a4 22%, #e8558f 48%, #be2f6b 78%, #8f1d4e 100%);
+            box-shadow:
+                0 40px 80px -20px rgba(0, 0, 0, 0.75),
+                0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+                0 2px 0 rgba(255, 255, 255, 0.35) inset,
+                0 -18px 40px rgba(90, 10, 45, 0.55) inset;
+        }
+
+        /* لمعة بتتحرك على الظرف */
+        .envelope-body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 48%, transparent 62%);
+            transform: translateX(-130%);
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .envelope-wrap.opened .envelope-body::after {
+            animation: envelopeShine 1.5s ease-out 1;
+        }
+
+        @keyframes envelopeShine {
+            0% { transform: translateX(-130%); }
+            100% { transform: translateX(130%); }
+        }
+
+        /* البطاقة اللي جوه */
+        .envelope-card {
+            background:
+                linear-gradient(170deg, #fffdfa 0%, #fff7f8 40%, #ffeef2 100%);
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(244, 63, 94, 0.14);
+        }
+
+        /* flap بتاع الظرف */
+        .envelope-flap {
+            background: linear-gradient(180deg, #f472a4 0%, #db2777 55%, #9d174d 100%);
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.5),
+                0 1px 0 rgba(255, 255, 255, 0.4) inset;
+            transition: transform 1.4s cubic-bezier(0.65, 0, 0.35, 1), opacity 1s ease;
+            transform-origin: top center;
+        }
+
+        .envelope-wrap.opened .envelope-flap {
+            transform: rotateX(178deg);
+            opacity: 0;
+        }
+
+        /* الجزء السفلي من الظرف */
+        .envelope-pocket {
+            background: linear-gradient(175deg, #e8558f 0%, #be2f6b 55%, #8f1d4e 100%);
+            box-shadow:
+                0 -2px 0 rgba(255, 255, 255, 0.25) inset,
+                0 30px 60px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        /* الختم (الجوة) */
+        .envelope-seal {
+            background: radial-gradient(circle at 32% 28%, #ffd9e3 0%, #f43f5e 42%, #9f1239 100%);
+            box-shadow:
+                0 0 0 4px rgba(255, 255, 255, 0.22),
+                0 0 26px rgba(244, 63, 94, 0.85),
+                0 8px 18px rgba(0, 0, 0, 0.5);
+            animation: sealPulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes sealPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 4px rgba(255,255,255,0.22), 0 0 26px rgba(244,63,94,0.85), 0 8px 18px rgba(0,0,0,0.5); }
+            50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(255,255,255,0.3), 0 0 42px rgba(244,63,94,1), 0 8px 22px rgba(0,0,0,0.55); }
+        }
+
+        /* هالات وردية طايرة */
+        .envelope-halo {
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(28px);
+            pointer-events: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .envelope-wrap,
+            .envelope-flap,
+            .envelope-wrap.opened .envelope-body::after,
+            .envelope-seal {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -595,11 +707,9 @@
             const handleLogin = () => {
                 if (password.trim().toUpperCase() === "RORO") {
                     setIsLogged(true);
+                    // اغنية الرسالة تشتغل من اول ما يدخل كلمة السر
+                    playSong(MESSAGE_SONG);
                     setTimeout(() => {
-                        if (audioRef.current) {
-                            audioRef.current.play().catch(e => console.log("Audio play blocked", e));
-                            setIsPlaying(true);
-                        }
                         setShowLetter(true);
                     }, 500);
                 } else {
@@ -1132,28 +1242,82 @@
                 <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-6 overflow-y-auto animate-fade-in">
                     
                     {!showFullLetter ? (
-                        <div className="relative w-full max-w-2xl h-[300px] md:h-[400px] flex items-end justify-center perspective-[1500px]" onClick={() => setShowFullLetter(true)}>
-                            {/* Letter popping just a little */}
-                            <div className={`absolute bottom-5 w-[85%] bg-slate-100 rounded-t-3xl shadow-2xl transition-all duration-[1500ms] ease-out z-20 flex flex-col items-center justify-start py-8 ${isOpened ? '-translate-y-[150px] md:-translate-y-[200px] h-[400px] md:h-[550px]' : 'h-[250px] md:h-[350px]'}`}>
-                                <div className="text-rose-800 font-script text-4xl opacity-60">إلى حبيبتي مروه ❤️</div>
-                                <Heart size={50} fill="#f43f5e" className="text-rose-500 mt-10 animate-pulse opacity-50" />
+                        <div
+                            className="envelope-stage relative w-full max-w-xl flex flex-col items-center justify-center"
+                            onClick={() => setShowFullLetter(true)}
+                        >
+                            {/* هالات وردية في الخلفية */}
+                            <div className="envelope-halo w-72 h-72 -top-10 bg-rose-500/25"></div>
+                            <div className="envelope-halo w-56 h-56 top-24 -left-16 bg-fuchsia-500/20"></div>
+                            <div className="envelope-halo w-64 h-64 top-16 -right-14 bg-pink-400/20"></div>
+
+                            {/* عنوان فوق الظرف */}
+                            <div className="relative z-20 text-center mb-8 animate-fade-in">
+                                <div className="text-5xl md:text-6xl mb-3 animate-pulse drop-shadow-[0_0_25px_rgba(244,63,94,0.7)]">💌</div>
+                                <p className="text-rose-200 font-bold text-xl md:text-2xl drop-shadow-md">
+                                    {isOpened ? 'الظرف بيفتح دلوقتي...' : 'دوس على الظرف بتفتح رسالتي ❤️'}
+                                </p>
                             </div>
 
-                            {/* Envelope Flap */}
-                            <div className={`absolute top-[10%] left-0 right-0 h-[50%] bg-pink-900 z-30 transition-all duration-[1500ms] origin-top ease-out shadow-xl ${isOpened ? 'rotate-x-180 opacity-0 pointer-events-none' : ''}`} style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', transformStyle: 'preserve-3d' }}>
-                                <div className="absolute inset-0 bg-gradient-to-b from-rose-900/50 to-transparent"></div>
-                                <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-16 h-16 bg-rose-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(225,29,72,0.8)] border-4 border-white/20">
-                                    <Heart size={24} fill="white" className="text-white animate-pulse" />
+                            {/* ===== الظرف ===== */}
+                            <div
+                                className={`envelope-wrap relative w-[86%] max-w-md aspect-[3/2] ${isOpened ? 'opened' : ''}`}
+                                style={{ height: 'auto' }}
+                            >
+                                {/* البطاقة (الرسالة) اللي جوه */}
+                                <div
+                                    className="envelope-card absolute left-1/2 w-[88%] rounded-2xl flex flex-col items-center justify-center overflow-hidden transition-all duration-[1400ms] ease-out z-10"
+                                    style={{
+                                        top: '8%',
+                                        transform: `translateX(-50%) ${isOpened ? 'translateY(-62%)' : 'translateY(0%)'}`,
+                                        height: isOpened ? '118%' : '96%',
+                                        padding: '1.5rem 1rem',
+                                    }}
+                                >
+                                    <div className="text-rose-800 font-script text-3xl md:text-4xl opacity-70 text-center">إلى حبيبتي مروه ❤️</div>
+                                    <div className="mt-4 w-16 h-1 rounded-full bg-rose-300/60"></div>
+                                    <Heart size={44} fill="#f43f5e" className="text-rose-500 mt-5 animate-pulse opacity-45" />
+                                </div>
+
+                                {/* جسم الظرف */}
+                                <div className="envelope-body absolute inset-0 rounded-[1.75rem] overflow-hidden z-20"></div>
+
+                                {/* flap — الجزء اللي بيتفتح */}
+                                <div
+                                    className="envelope-flap absolute left-0 right-0 top-0 h-[62%] z-30"
+                                    style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', transformStyle: 'preserve-3d' }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent"></div>
+                                </div>
+
+                                {/* الختم (الجوة) — بيختفي لما يتفتح */}
+                                <div
+                                    className={`envelope-seal absolute left-1/2 w-16 h-16 rounded-full z-40 flex items-center justify-center transition-all duration-700 ${isOpened ? 'opacity-0 scale-150' : 'opacity-100 scale-100'}`}
+                                    style={{ top: '52%', transform: 'translate(-50%, -50%)' }}
+                                >
+                                    <Heart size={28} fill="#ffffff" className="text-white" />
+                                </div>
+
+                                {/* جيب الظرف السفلي */}
+                                <div
+                                    className="envelope-pocket absolute inset-0 z-30 rounded-b-[1.75rem]"
+                                    style={{ clipPath: 'polygon(0 22%, 50% 62%, 100% 22%, 100% 100%, 0 100%)' }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                </div>
+
+                                {/* لمعة على الجيب */}
+                                <div className="absolute inset-0 z-40 rounded-[1.75rem] overflow-hidden pointer-events-none">
+                                    <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-white/10 to-transparent"></div>
                                 </div>
                             </div>
-                            
-                            {/* Envelope Bottom */}
-                            <div className={`absolute bottom-0 left-0 right-0 h-[80%] bg-rose-800 z-30 rounded-b-3xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] border-t border-rose-400/20 transition-all duration-1000 ${isOpened ? 'opacity-0 scale-95 translate-y-10 pointer-events-none' : ''}`} style={{ clipPath: 'polygon(0 0, 50% 30%, 100% 0, 100% 100%, 0 100%)' }}></div>
-                            <div className={`absolute bottom-0 left-0 right-0 h-[80%] bg-rose-950 z-0 rounded-b-3xl transition-all duration-1000 ${isOpened ? 'opacity-0 scale-95 translate-y-10 pointer-events-none' : ''}`}></div>
-                            
-                            {!isOpened && (
-                                <div className="absolute -top-16 md:-top-20 text-rose-300 font-bold text-2xl md:text-3xl animate-bounce drop-shadow-md">جاري فتح الظرف السري... 💌</div>
-                            )}
+
+                            {/* نص تحت الظرف */}
+                            <div className="relative z-20 mt-10 text-center">
+                                <p className="text-slate-400 font-medium text-sm md:text-base">
+                                    {isOpened ? 'جاري إخراج الرسالة... 💗' : 'الرسالة جاهزة... استني ثانية 💗'}
+                                </p>
+                            </div>
                         </div>
                     ) : (
                         <div className="bg-slate-900/95 backdrop-blur-xl rounded-[2.5rem] w-full max-w-3xl p-8 md:p-12 shadow-[0_0_60px_rgba(244,63,94,0.3)] text-right border border-rose-500/30 animate-fade-in relative z-50 my-auto" dir="rtl">
